@@ -9,11 +9,21 @@ modules:
 objects:
   - documentos: DAFileList.using(gathered=True)
   - rut_emp: DAFile
-  - documento: DAFile
+  - doc_rep: DAFile
   - empresa: Organization
   - persona: Individual
 ---
-#mandatory: True 
+question: |
+  Información del representante legal
+fields:
+  - Nombres del representante: persona.nombres
+    required: True
+  - Apellidos del representante: persona.apellidos
+    required: True
+  - Numero de identificacion: persona.id
+    datatype: integer
+    required: True 
+---
 question: |
   Información básica de la empresa
 fields:
@@ -28,8 +38,6 @@ fields:
     datatype: integer
 
 ---
-
-#mandatory: True
 question: |
   Adjunte su RUT en PDF
 
@@ -39,37 +47,48 @@ fields:
     required: True
     
 ---
-
-#mandatory: True
 question: |
   Adjunte su documento de identidad en PDF
 
 fields:
-  - ID: documento
+  - ID: doc_rep
     datatype: file
     required: True
     
 ---
+question: |
+  Adjunte las referencias bancarias de soporte
 
+fields:
+  - Referencias bancarias: documentos
+    datatype: files
+    required: True
+    
+---
 mandatory: True
 code: |
+  persona.nombres
+  empresa.nombre
   rut_emp
-  documento
-  #empresa.nombre
+  doc_rep
+  documentos
 
-  documentos.initialized = True
-  documentos.clear()
-  documentos.append(rut_emp)
-  documentos.append(documento)
+  resultado_envio = enviar_archivos(rut_emp, empresa, persona)
   
-  resultado_envio = generar_json_dinamico(
-      documentos, 
-      metadata={"nombre": "Blend4"}, 
-      webhook_url="https://defaultb1aae949a5ef4815b7aff7c4aa546b.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4bc6726a09aa4e94a12fd73e61d2d3e2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fFHbjCPOGUMvBDsPdTzRbZRXpCdde5wraCe9CdlVfJ4"
-  )
+  resultado_envio = enviar_archivos(doc_rep, empresa, persona)
+
+  resultado_envio = enviar_archivos(documentos, empresa, persona)
+  
   status_code = resultado_envio[0]
   response_text = resultado_envio[1]
+
 ---
-#mandatory: True
+mandatory: True
 question: |
   ¡Gracias por enviar los documentos!
+subquestion: |
+  Tu proceso ha finalizado con éxito.
+  
+buttons:
+  - Salir: exit
+    url: https://www.google.com
