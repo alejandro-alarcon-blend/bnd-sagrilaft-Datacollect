@@ -1,0 +1,153 @@
+---
+metadata:
+  title: Test vinculacion contraparte
+---
+modules:
+  - .test
+
+---
+objects:
+  - documentos: DAFileList.using(gathered=True)
+  - rut: DAFile
+  - id: DAFile
+  - empresa: Organization
+  - persona: Individual
+---
+mandatory: True 
+question: |
+  Información básica de la empresa
+fields:
+  - Nombre o razón social: empresa.nombre
+    required: True
+  - NIT: empresa.nit
+    datatype: integer
+    required: True 
+  - E-mail: empresa.email
+    required: True 
+  - Telefono: empresa.tel
+    datatype: integer
+
+---
+
+mandatory: True
+question: |
+  Adjunte su RUT en PDF
+
+fields:
+  - RUT: rut
+    datatype: file
+    required: True
+    
+---
+code: 
+  documentos.append(rut)
+---
+
+
+mandatory: True
+question: |
+  Adjunte su documento de identidad en PDF
+
+fields:
+  - ID: id
+    datatype: file
+    required: True
+    
+---
+code: 
+  documentos.append(id)
+---
+
+mandatory: True
+code: |
+  documentos.gathered = True
+  resultado_envio = generar_json_dinamico(
+      archivos=documentos, 
+      metadata={"nombre": empresa.nombre}, 
+      webhook_url="https://defaultb1aae949a5ef4815b7aff7c4aa546b.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4bc6726a09aa4e94a12fd73e61d2d3e2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fFHbjCPOGUMvBDsPdTzRbZRXpCdde5wraCe9CdlVfJ4"
+  )
+  status_code = resultado_envio[0]
+  response_text = resultado_envio[1]
+---
+mandatory: True
+question: |
+  ¡Gracias por enviar los documentos!
+
+
+
+
+
+
+---
+metadata:
+  title: Test vinculacion contraparte
+---
+modules:
+  - .test
+
+---
+objects:
+  #- documentos: DAList.using(auto_gather=False)
+  - rut_emp: DAFile
+  - id_emp: DAFile
+  - empresa: Organization
+  - persona: Individual
+---
+mandatory: True 
+question: |
+  Información básica de la empresa
+fields:
+  - Nombre o razón social: empresa.nombre
+    required: True
+  - NIT: empresa.nit
+    datatype: integer
+    required: True 
+  - E-mail: empresa.email
+    required: True 
+  - Telefono: empresa.tel
+    datatype: integer
+
+---
+
+mandatory: True
+question: |
+  Adjunte su RUT en PDF
+
+fields:
+  - RUT: rut_emp
+    datatype: file
+    required: True
+    
+#---
+#code: 
+  #documentos.append(rut)
+---
+
+mandatory: True
+question: |
+  Adjunte su documento de identidad en PDF
+
+fields:
+  - ID: id_emp
+    datatype: file
+    required: True
+    
+#---
+#code: |
+
+---
+
+mandatory: True
+code: |
+  
+  resultado_envio = generar_json_dinamico(
+      archivos={id_emp, rut_emp}, 
+      metadata={"nombre": empresa.nombre}, 
+      webhook_url="https://defaultb1aae949a5ef4815b7aff7c4aa546b.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4bc6726a09aa4e94a12fd73e61d2d3e2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fFHbjCPOGUMvBDsPdTzRbZRXpCdde5wraCe9CdlVfJ4"
+  )
+  status_code = resultado_envio[0]
+  response_text = resultado_envio[1]
+---
+#mandatory: True
+question: |
+  ¡Gracias por enviar los documentos!

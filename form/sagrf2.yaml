@@ -1,0 +1,75 @@
+---
+metadata:
+  title: Test vinculacion contraparte
+---
+modules:
+  - .test
+
+---
+objects:
+  - documentos: DAFileList.using(gathered=True)
+  - rut_emp: DAFile
+  - documento: DAFile
+  - empresa: Organization
+  - persona: Individual
+---
+#mandatory: True 
+question: |
+  Información básica de la empresa
+fields:
+  - Nombre o razón social: empresa.nombre
+    required: True
+  - NIT: empresa.nit
+    datatype: integer
+    required: True 
+  - E-mail: empresa.email
+    required: True 
+  - Telefono: empresa.tel
+    datatype: integer
+
+---
+
+#mandatory: True
+question: |
+  Adjunte su RUT en PDF
+
+fields:
+  - RUT: rut_emp
+    datatype: file
+    required: True
+    
+---
+
+#mandatory: True
+question: |
+  Adjunte su documento de identidad en PDF
+
+fields:
+  - ID: documento
+    datatype: file
+    required: True
+    
+---
+
+mandatory: True
+code: |
+  rut_emp
+  documento
+  #empresa.nombre
+
+  documentos.initialized = True
+  documentos.clear()
+  documentos.append(rut_emp)
+  documentos.append(documento)
+  
+  resultado_envio = generar_json_dinamico(
+      documentos, 
+      metadata={"nombre": "Blend4"}, 
+      webhook_url="https://defaultb1aae949a5ef4815b7aff7c4aa546b.28.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4bc6726a09aa4e94a12fd73e61d2d3e2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fFHbjCPOGUMvBDsPdTzRbZRXpCdde5wraCe9CdlVfJ4"
+  )
+  status_code = resultado_envio[0]
+  response_text = resultado_envio[1]
+---
+#mandatory: True
+question: |
+  ¡Gracias por enviar los documentos!
